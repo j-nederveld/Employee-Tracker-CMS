@@ -133,7 +133,6 @@ function init(){
             }    
             break;
             case "View All Departments":
-                console.log(departments);
                 if(departments.length === 0){
                     console.log("There are currently no departments.");
                     init();

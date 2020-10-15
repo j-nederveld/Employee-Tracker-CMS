@@ -43,4 +43,4 @@ GitHub: [j-nederveld](https://github.com/j-nederveld)
 
 Email: john.nederveld@gmail.com
 
-Video displaying functionality: https://www.loom.com/share/8360bcb85bcd4a4ba5ba5bc663218344
+Video displaying functionality: https://www.loom.com/share/f96ee1e8bbc74ed991db782c1e4c1b52?from_recorder=1
