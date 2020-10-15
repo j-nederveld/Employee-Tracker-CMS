@@ -145,7 +145,7 @@ function init(){
     })
 }
 
-//view all employees, updates whenever init is called
+//view all employees, updates nameslist for prompts
 function getEmployees(){
     connection.query(
         "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee INNER JOIN role on role_id = role.id INNER JOIN department on department_id = department.id", 
@@ -156,7 +156,7 @@ function getEmployees(){
       });
 }
 
-//shows all employees
+//shows all employees///makes sure list is up to date
 function renderEmployees(){
     getEmployees();
     console.table(employees);
