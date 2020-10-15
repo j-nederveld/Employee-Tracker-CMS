@@ -41,7 +41,7 @@ function init(){
       {
           type: "list",
           message: "What do you want to do?",
-          choices: ["View All Employees", "View All Employees By Department", "Add Employee", "Add Role", "Add Department", "Remove Employee", "Remove Role", "Update Employee Role", "Update Employee Manager", "View All Roles"],
+          choices: ["View All Employees", "View All Employees By Department", "Add Employee", "Add Role", "Add Department", "Remove Employee", "Remove Role", "Update Employee Role", "View All Roles"],
           name: "option"
       }
       ])
