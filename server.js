@@ -1,9 +1,5 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-const { isIntersectionTypeAnnotation, inheritInnerComments } = require("@babel/types");
-const { ConsoleWriter } = require("istanbul-lib-report");
-const { get } = require("http");
-const { stringify } = require("querystring");
 let departments = [];
 let roles = [];
 let employees = [];
