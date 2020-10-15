@@ -19,7 +19,7 @@ npm i
 `
 ## Usage 
 
-Run "node server.js" to begin
+Run "node server.js" or "npm start" to begin. Make sure to enter your password in the server.js file on line 30.
 
 ## License
 `
