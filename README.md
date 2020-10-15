@@ -1,6 +1,6 @@
 # Employee Tracker CMS
 
-![](weatherapp.gif)
+![](https://github.com/j-nederveld/Employee-Tracker-CMS/blob/main/img/Screen%20Shot%202020-10-14%20at%2010.56.43%20PM.png)
 
 ## Description 
 
