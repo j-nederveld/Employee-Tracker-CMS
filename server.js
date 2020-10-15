@@ -55,7 +55,7 @@ function init(){
       {
           type: "list",
           message: "What do you want to do?",
-          choices: ["View All Employees", "View All Employees By Department", "View All Employees By Role", "Add Employee", "Add Role", "Add Department", "Remove Employee", "Remove Role", "Remove Department", "Update Employee Role", "View All Roles", "View All Departments", "Get Department Budget"],
+          choices: ["View All Employees", "View All Employees By Department", "View All Employees By Role", "Add Employee", "Add Role", "Add Department", "Remove Employee", "Remove Role", "Remove Department", "Update Employee Role", "Update Employee Manager", "View All Roles", "View All Departments", "Get Department Budget"],
           name: "option"
       }
       ])
@@ -129,7 +129,15 @@ function init(){
                     console.log("There are currently no employees.");
                     init();
                 } else {
-                    updateEmployeeRole();
+                    updateEmployeeRole()
+                }   
+            break;
+            case "Update Employee Manager":
+                if(employees.length === 0){
+                    console.log("There are currently no employees.");
+                    init();
+                } else {
+                    assignManager();
                 }   
             break;
             case "View All Roles":     
@@ -163,7 +171,7 @@ function init(){
 //view all employees, updates nameslist for prompts
 function getEmployees(){
     connection.query(
-        "SELECT employee.first_name, employee.last_name, role.title, role.salary, department.name FROM employee INNER JOIN role on role_id = role.id INNER JOIN department on department_id = department.id", 
+        "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name, employee.manager_id FROM employee INNER JOIN role on role_id = role.id INNER JOIN department on department_id = department.id", 
         function(err, res) {
         if (err) throw err;
         employees = res;
@@ -191,13 +199,6 @@ function viewByDepartment(){
         .then(function(res){
             var result = employees.filter( obj => obj.name === res.option);
             console.table(result);
-
-            for(i = 0; i < result.length; i++){
-                budget.push(result[i].salary)
-            }
-            console.log(
-                "Department Budget: $" + budget.reduce((a, b) => a + b, 0)
-              )
             init();
         });
 }
@@ -215,6 +216,10 @@ function getDepartmentBudget(){
         ])
         .then(function(res){
             var result = employees.filter( obj => obj.name === res.option);
+            if (result.length === 0){
+                console.log("This department has no current budget");
+                init();
+            } else {
             for(i = 0; i < result.length; i++){
                 budget.push(result[i].salary)
             }
@@ -222,7 +227,9 @@ function getDepartmentBudget(){
                 result[0].name + " Budget: $" + budget.reduce((a, b) => a + b, 0))
               )
             init();
+            }
         });
+        
 }
 
 //choose department to view employees by, and filter the employees array
@@ -497,18 +504,57 @@ function updateEmployeeRole(){
             function(err, res){
                 if (err) throw err;
                 roleID = res[0].id;
-            updateEmployee(first_name, last_name, roleID);
+            updateEmployee("role_id", first_name, last_name, roleID);
             })
         });
 }
 
 //update employee based on the prompts from updateEmployeeRole
-function updateEmployee(fname, lname, id){
-    connection.query("UPDATE employee SET role_id = ? WHERE (first_name, last_name) = (?, ?)",[ id, fname, lname ], 
+function updateEmployee(col, fname, lname, id){
+    connection.query("UPDATE employee SET ?? = ? WHERE (first_name, last_name) = (?, ?)",[ col, id, fname, lname ], 
         function(err, res) {
             if (err) throw err;
             console.log(fname + ' ' + lname + " has been updated!")
         getEmployees();
         init();
   });
+}
+
+function assignManager(){
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "Which employee would you like to update?",
+            choices: employeeNames,
+            name: "employee"
+        },
+        {
+            type: "list",
+            message: "Who is their Manager?",
+            choices: employeeNames,
+            name: "manager"
+        }
+        ])
+        .then(function(res){
+
+            if (res.employee === res.manager){
+                console.log("Employees can not be their own manager.");
+                assignManager();
+            } else {
+
+            var manager_first_name = res.manager.split(' ').slice(0, -1).join(' ');
+            var manager_last_name = res.manager.split(' ').slice(-1).join(' ');
+            var managerID = employees.filter( obj => obj.first_name === manager_first_name && obj.last_name === manager_last_name);
+            managerID = managerID[0].id;
+            console.log(managerID);
+
+            var employee_first_name = res.employee.split(' ').slice(0, -1).join(' ');
+            var employee_last_name = res.employee.split(' ').slice(-1).join(' ');
+
+            updateEmployee("manager_id", employee_first_name, employee_last_name, managerID);
+
+            }
+
+
+        });
 }
