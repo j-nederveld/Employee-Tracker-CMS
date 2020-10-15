@@ -1,16 +1,22 @@
+//require packages
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+const chalk = require('chalk');
+const logo = require("asciiart-logo");
+
+//variables for prompts and inserts
 let departments = [];
 let roles = [];
 let employees = [];
 let employeeNames = [];
 let departmentID = '';
 let roleID = '';
-const logo = require("asciiart-logo");
 
+//log logoText on start
 const logoText = logo({ name: "Employee Manager" }).render();
-    console.log(logoText);
+    console.log(chalk.blue(logoText));
 
+//create connection
 var connection = mysql.createConnection({
   host: "localhost",
 
@@ -21,19 +27,21 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "Thisisadream",
+  password: "",
   database: "staff_db"
 });
 
+  //get initial data which we can filter in order to reduce the amount of select statements
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("connected as id " + connection.threadId);
-init();
-getEmployees();
-getDepartments();
-getRoles();
+  console.log(chalk.green("connected as id " + connection.threadId));
+    init();
+    getEmployees();
+    getDepartments();
+    getRoles();
 });
-
+  
+  //get list of employee names for prompts
 function getNamesList(){
     employeeNames = [];
     for(i = 0; i < employees.length; i++){
@@ -41,19 +49,19 @@ function getNamesList(){
     }
 }
 
+  //initial prompts
 function init(){
-    
     inquirer.prompt([
       {
           type: "list",
           message: "What do you want to do?",
-          choices: ["View All Employees", "View All Employees By Department", "View All Employees By Role", "Add Employee", "Add Role", "Add Department", "Remove Employee", "Remove Role", "Remove Department", "Update Employee Role", "View All Roles", "View All Departments"],
+          choices: ["View All Employees", "View All Employees By Department", "View All Employees By Role", "Add Employee", "Add Role", "Add Department", "Remove Employee", "Remove Role", "Remove Department", "Update Employee Role", "View All Roles", "View All Departments", "Get Department Budget"],
           name: "option"
       }
       ])
       .then(function(res){
         switch (res.option) {
-            // BONUS - How could you use * + etc. inside the app.get()?
+            //make sure employees/roles/departments have values before continuing 
             case "View All Employees":
                 if(employees.length === 0){
                     console.log("There are currently no employees.");
@@ -140,6 +148,14 @@ function init(){
                     viewDepartments();
                 }    
             break;
+            case "Get Department Budget":
+                if(departments.length === 0){
+                    console.log("There are currently no departments.");
+                    init();
+                } else {
+                    getDepartmentBudget();
+                }    
+            break;
         }
     })
 }
@@ -175,6 +191,36 @@ function viewByDepartment(){
         .then(function(res){
             var result = employees.filter( obj => obj.name === res.option);
             console.table(result);
+
+            for(i = 0; i < result.length; i++){
+                budget.push(result[i].salary)
+            }
+            console.log(
+                "Department Budget: $" + budget.reduce((a, b) => a + b, 0)
+              )
+            init();
+        });
+}
+
+//choose department, filter employees and add their salaries
+function getDepartmentBudget(){
+    let budget = [];
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "Choose Department:",
+            choices: departments,
+            name: "option"
+        }
+        ])
+        .then(function(res){
+            var result = employees.filter( obj => obj.name === res.option);
+            for(i = 0; i < result.length; i++){
+                budget.push(result[i].salary)
+            }
+            console.log(chalk.red(
+                result[0].name + " Budget: $" + budget.reduce((a, b) => a + b, 0))
+              )
             init();
         });
 }
