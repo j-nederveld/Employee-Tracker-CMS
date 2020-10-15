@@ -1,5 +1,7 @@
 # Employee Tracker CMS
 
+![](weatherapp.gif)
+
 ## Description 
 
 node application that allows a user to view, update, and remove employees as well as their roles and departments. The app uses MySQL and Inquirer in order to prompt the user, and make changes to the database.
