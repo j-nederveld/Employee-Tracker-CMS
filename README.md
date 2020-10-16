@@ -19,7 +19,9 @@ npm i
 `
 ## Usage 
 
-Run "node server.js" or "npm start" to begin. Make sure to enter your password in the server.js file on line 30.
+After creating the database run "node server.js" or "npm start" to begin. Make sure to enter your password in the server.js file on line 30.
+
+Begin by adding a new department, then add roles to that department, and finally add employees to fill those roles. Employees can change roles, and you can delete departments, roles, or employees at any time. You may also view the department's budget (combined salary of all employees belonging to the department). If the department has no employees, "This department has no current budget" will be logged.
 
 ## License
 `

@@ -27,7 +27,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "Thisisadream",
+  password: "",
   database: "staff_db"
 });
 
@@ -64,7 +64,7 @@ function init(){
             //make sure employees/roles/departments have values before continuing 
             case "View All Employees":
                 if(employees.length === 0){
-                    console.log("There are currently no employees.");
+                    console.log(chalk.red("There are currently no employees."));
                     init();
                 } else {
                     renderEmployees();
@@ -72,7 +72,7 @@ function init(){
             break;
             case "View All Employees By Department":
                 if(departments.length === 0){
-                    console.log("There are currently no departments.");
+                    console.log(chalk.red("There are currently no departments."));
                     init();
                 } else {
                     viewByDepartment();
@@ -80,7 +80,7 @@ function init(){
             break;
             case "View All Employees By Role":
                 if(roles.length === 0){
-                    console.log("There are currently no roles.");
+                    console.log(chalk.red("There are currently no roles."));
                     init();
                 } else {
                     viewByRole();
@@ -88,7 +88,7 @@ function init(){
             break;
             case "Add Employee":
                 if(roles.length === 0){
-                    console.log("Requires roles!");
+                    console.log(chalk.red("Requires roles!"));
                     init();
                 } else {
                     addEmployee();
@@ -102,7 +102,7 @@ function init(){
             break;
             case "Remove Employee":
                 if(employees.length === 0){
-                    console.log("There are currently no employees.");
+                    console.log(chalk.red("There are currently no employees."));
                     init();
                 } else {
                     removeEmployeeQuery();
@@ -110,7 +110,7 @@ function init(){
             break;
             case "Remove Role":
                 if(roles.length === 0){
-                    console.log("There are currently no roles.");
+                    console.log(chalk.red("There are currently no roles."));
                     init();
                 } else {
                     removeRole();
@@ -118,7 +118,7 @@ function init(){
             break;
             case "Remove Department":
                 if(departments.length === 0){
-                    console.log("There are currently no departments.");
+                    console.log(chalk.red("There are currently no departments."));
                     init();
                 } else {
                     removeDepartment();
@@ -126,7 +126,7 @@ function init(){
             break;
             case "Update Employee Role":
                 if(employees.length === 0){
-                    console.log("There are currently no employees.");
+                    console.log(chalk.red("There are currently no employees."));
                     init();
                 } else {
                     updateEmployeeRole()
@@ -134,7 +134,7 @@ function init(){
             break;
             case "Update Employee Manager":
                 if(employees.length === 0){
-                    console.log("There are currently no employees.");
+                    console.log(chalk.red("There are currently no employees."));
                     init();
                 } else {
                     assignManager();
@@ -142,7 +142,7 @@ function init(){
             break;
             case "View All Roles":     
                 if(roles.length === 0){
-                    console.log("There are currently no roles.");
+                    console.log(chalk.red("There are currently no roles."));
                     init();
                 } else {
                     viewRoles();
@@ -150,7 +150,7 @@ function init(){
             break;
             case "View All Departments":
                 if(departments.length === 0){
-                    console.log("There are currently no departments.");
+                    console.log(chalk.red("There are currently no departments."));
                     init();
                 } else {
                     viewDepartments();
@@ -158,7 +158,7 @@ function init(){
             break;
             case "Get Department Budget":
                 if(departments.length === 0){
-                    console.log("There are currently no departments.");
+                    console.log(chalk.red("There are currently no departments."));
                     init();
                 } else {
                     getDepartmentBudget();
@@ -217,13 +217,13 @@ function getDepartmentBudget(){
         .then(function(res){
             var result = employees.filter( obj => obj.name === res.option);
             if (result.length === 0){
-                console.log("This department has no current budget");
+                console.log(chalk.red("This department has no current budget"));
                 init();
             } else {
             for(i = 0; i < result.length; i++){
                 budget.push(result[i].salary)
             }
-            console.log(chalk.red(
+            console.log(chalk.blue(
                 result[0].name + " Budget: $" + budget.reduce((a, b) => a + b, 0))
               )
             init();
@@ -348,7 +348,7 @@ function addDepartment(){
                 [res.department],
                 function(err, res) {
                 if (err) throw err;
-                console.log("Department created!")
+                console.log(chalk.green("Department created!"))
                 getDepartments();
                 init();
               });
@@ -413,7 +413,7 @@ function removeRole(){
             connection.query("DELETE FROM role WHERE (role.title) = (?)",[ res.role ], 
             function(err, res) {
             if (err) throw err;
-            console.log("Role has been removed.")
+            console.log(chalk.red("Role has been removed."))
         getRoles();
         init();
         });
@@ -434,8 +434,10 @@ function removeDepartment(){
             connection.query("DELETE FROM department WHERE (department.name) = (?)",[ res.dep ], 
             function(err, res) {
             if (err) throw err;
-            console.log("Department has been removed.")
+            console.log(chalk.red("Department has been removed."))
         getDepartments();
+        getRoles();
+        getEmployees();
         init();
         });
         });
@@ -446,7 +448,7 @@ function insertEmployee(firstname, lastname){
     connection.query("INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)",[ firstname, lastname, roleID ], 
     function(err, res) {
     if (err) throw err;
-    console.log("Employee added!");
+    console.log(chalk.green("Employee added!"));
     getEmployees();
     init();
   });
@@ -475,7 +477,7 @@ function removeEmployee(name){
     connection.query("DELETE FROM employee WHERE (first_name, last_name) = (?, ?)",[ first_name, last_name ], 
         function(err, res) {
             if (err) throw err;
-            console.log(name + " has been removed.")
+            console.log(chalk.red(name + " has been removed."))
         getEmployees();
         init();
   });
@@ -514,7 +516,7 @@ function updateEmployee(col, fname, lname, id){
     connection.query("UPDATE employee SET ?? = ? WHERE (first_name, last_name) = (?, ?)",[ col, id, fname, lname ], 
         function(err, res) {
             if (err) throw err;
-            console.log(fname + ' ' + lname + " has been updated!")
+            console.log(chalk.green(fname + ' ' + lname + " has been updated!"))
         getEmployees();
         init();
   });
@@ -538,7 +540,7 @@ function assignManager(){
         .then(function(res){
 
             if (res.employee === res.manager){
-                console.log("Employees can not be their own manager.");
+                console.log(chalk.red("Employees can not be their own manager."));
                 assignManager();
             } else {
 
@@ -546,8 +548,7 @@ function assignManager(){
             var manager_last_name = res.manager.split(' ').slice(-1).join(' ');
             var managerID = employees.filter( obj => obj.first_name === manager_first_name && obj.last_name === manager_last_name);
             managerID = managerID[0].id;
-            console.log(managerID);
-
+            
             var employee_first_name = res.employee.split(' ').slice(0, -1).join(' ');
             var employee_last_name = res.employee.split(' ').slice(-1).join(' ');
 
